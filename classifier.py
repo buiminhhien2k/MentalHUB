@@ -10,6 +10,7 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import SVC
 from sklearn.model_selection import StratifiedShuffleSplit, GridSearchCV
 
+from config import CLEAN_DATA_JSON_ID, MATRIX_ID
 
 # Load your Reddit dataset
 def load_dataset(file_path):

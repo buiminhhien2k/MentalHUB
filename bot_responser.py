@@ -7,14 +7,20 @@ import pickle
 import os.path
 from tqdm import tqdm
 import random as rd
+import gdown
+from io import BytesIO
+
+from config import CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID
+
 
 # Load your Reddit dataset
-def load_dataset(file_path):
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-        f.close()
+def load_dataset(clean_data_json_id):
+    file_url = f"https://drive.google.com/uc?id={clean_data_json_id}"
+    memory_file = BytesIO()
+    gdown.download(file_url, output=memory_file, quiet=True)
+    memory_file.seek(0)
+    return json.load(memory_file)
 
-        return data
 
 # Step 1: Build the retrieval corpus
 def prepare_corpus(data):
@@ -40,38 +46,57 @@ def prepare_corpus(data):
     return corpus, doc_ids, doc_id_comments
 
 # Step 2: Create and store embeddings
-def build_post_matrix(corpus, model_name='all-MiniLM-L6-v2', matrix_file_path='model/matrix_corpus.pickle'):
+def build_post_matrix(corpus, matrix_id, model_name='all-MiniLM-L6-v2', matrix_file_path='model/matrix_corpus.pickle'):
 
     embedder = SentenceTransformer(model_name)
-    if not os.path.isfile(matrix_file_path):
-        matrix = np.array([embedder.encode(doc, convert_to_tensor=False) for doc in tqdm(corpus)])
-        with open(matrix_file_path, 'wb') as file:
-            # Serialize and write the variable to the file
-            pickle.dump(matrix, file)
-            file.close()
-    else:
-        with open(matrix_file_path, 'rb') as file:
-            # Deserialize and retrieve the variable from the file
-            matrix = pickle.load(file)
-            file.close()
+
+    # # this is the old version to get the embedded corpus matrix
+    # if not os.path.isfile(matrix_file_path):
+    #     matrix = np.array([embedder.encode(doc, convert_to_tensor=False) for doc in tqdm(corpus)])
+    #     with open(matrix_file_path, 'wb') as file:
+    #         # Serialize and write the variable to the file
+    #         pickle.dump(matrix, file)
+    #         file.close()
+    # else:
+    #     with open(matrix_file_path, 'rb') as file:
+    #         # Deserialize and retrieve the variable from the file
+    #         matrix = pickle.load(file)
+    #         file.close()
+
+    file_url = f"https://drive.google.com/uc?id={matrix_id}"
+    memory_file = BytesIO()
+    gdown.download(file_url, output=memory_file, quiet=True)
+    memory_file.seek(0)
+
+    matrix = pickle.load(memory_file)
 
     return embedder, matrix
 
 # Step 3: Generative model setup
-def load_generative_model(model_name='google-t5/t5-small', file_path='model/summarizer_pipeline.pickle'):
-    # tokenizer = AutoTokenizer.from_pretrained(model_name)
-    # model = AutoModelForCausalLM.from_pretrained(model_name)
-    if not os.path.isfile(file_path):
-        generator = pipeline("summarization", model=model_name)
-        with open(file_path, 'wb') as file:
-            # Serialize and write the variable to the file
-            pickle.dump(generator, file)
+def load_generative_model(paraphaser_id, model_name='google-t5/t5-small', file_path='model/summarizer_pipeline.pickle'):
 
-    else:
-        with open(file_path, 'rb') as file:
-            # Deserialize and retrieve the variable from the file
-            generator = pickle.load(file)
+    # # below is the old version, I modfify to load it from google drive so the app is lighter
+    # if not os.path.isfile(file_path):
+    #     generator = pipeline("summarization", model=model_name)
+    #     with open(file_path, 'wb') as file:
+    #         # Serialize and write the variable to the file
+    #         pickle.dump(generator, file)
+    #
+    # else:
+    #     with open(file_path, 'rb') as file:
+    #         # Deserialize and retrieve the variable from the file
+    #         generator = pickle.load(file)
+    # return generator
+
+    file_url = f"https://drive.google.com/uc?id={paraphaser_id}"
+    memory_file = BytesIO()
+    gdown.download(file_url, output=memory_file, quiet=True)
+    memory_file.seek(0)
+
+    generator = pickle.load(memory_file)
+
     return generator
+
 
 # Step 4: Find response from data
 def find_response_message(query, corpus_matrix, comment_indexer, embedder):
@@ -151,8 +176,8 @@ def paraphrase_message(message, generator):
     return returned_message[:-2] if returned_message[-2:] == '\n\n' else returned_message
 
     # Load and preprocess data
-data = load_dataset("data/clean/clean_data.json")
+data = load_dataset(CLEAN_DATA_JSON_ID)
 corpus, doc_ids, doc_id_comments_mapper = prepare_corpus(data)
-# Build retrieval system
-generator = load_generative_model()
-vector_embedder, matrices = build_post_matrix(corpus)
+# # Build retrieval system
+generator = load_generative_model(SUMMERIZER_ID)
+vector_embedder, matrices = build_post_matrix(corpus, MATRIX_ID)

@@ -3,16 +3,23 @@ import random as rd
 
 from bot_responser import (
     vector_embedder, matrices, generator, doc_id_comments_mapper,
-    find_response_message, paraphrase_message
+    find_response_message, paraphrase_message, BytesIO, gdown
 )
 
 from flask import Flask, render_template, request, jsonify
+from config import CLASSIFIER_ID
 
+def get_classifier_model(classifier_id, cls_model_pickle_file="model/svc_1vR_classifier.pickle"):
+    # with open(cls_model_pickle_file, 'rb') as file:
+    #     # Deserialize and retrieve the variable from the file
+    #     cls_1vR_model = pickle.load(file)
 
-def get_classifier_model(cls_model_pickle_file="model/svc_1vR_classifier.pickle"):
-    with open(cls_model_pickle_file, 'rb') as file:
-        # Deserialize and retrieve the variable from the file
-        cls_1vR_model = pickle.load(file)
+    file_url = f"https://drive.google.com/uc?id={classifier_id}"
+    memory_file = BytesIO()
+    gdown.download(file_url, output=memory_file, quiet=True)
+    memory_file.seek(0)
+
+    cls_1vR_model = pickle.load(memory_file)
 
     return cls_1vR_model
 
@@ -47,7 +54,7 @@ def prepare_classifier_message(predicted_result, classes):
     return message_format
 
 
-classifier_model = get_classifier_model()
+classifier_model = get_classifier_model(CLASSIFIER_ID)
 
 app = Flask(__name__)
 
