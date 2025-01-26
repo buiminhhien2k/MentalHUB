@@ -1,16 +1,16 @@
 import json
-import numpy as np
-from sentence_transformers import SentenceTransformer
-from transformers import pipeline
+# import numpy as np
+# from sentence_transformers import SentenceTransformer
+# from transformers import pipeline
 
 import pickle
-import os.path
-from tqdm import tqdm
+# import os.path
+# from tqdm import tqdm
 import random as rd
 import gdown
 from io import BytesIO
 
-from config import CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID
+from config import CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
 
 
 # Load your Reddit dataset
@@ -46,11 +46,30 @@ def prepare_corpus(data):
     return corpus, doc_ids, doc_id_comments
 
 # Step 2: Create and store embeddings
-def build_post_matrix(corpus, matrix_id, model_name='all-MiniLM-L6-v2', matrix_file_path='model/matrix_corpus.pickle'):
+def build_post_matrix(
+        corpus,
+        matrix_id,
+        embedder_id,
+        model_name='all-MiniLM-L6-v2',
+        matrix_file_path='model/matrix_corpus.pickle',
+        embedder_file_path='model/sentence_embedder.pickle'
+    ):
 
-    embedder = SentenceTransformer(model_name)
 
     # # this is the old version to get the embedded corpus matrix
+
+    # if not os.path.isfile(embedder_file_path):
+    #     embedder = SentenceTransformer(model_name)
+    #     with open(embedder_file_path, 'wb') as file:
+    #         # Serialize and write the variable to the file
+    #         pickle.dump(embedder, file)
+    #         file.close()
+    # else:
+    #     with open(embedder_file_path, 'rb') as file:
+    #         # Deserialize and retrieve the variable from the file
+    #         embedder = pickle.load(file)
+    #         file.close()
+
     # if not os.path.isfile(matrix_file_path):
     #     matrix = np.array([embedder.encode(doc, convert_to_tensor=False) for doc in tqdm(corpus)])
     #     with open(matrix_file_path, 'wb') as file:
@@ -63,12 +82,19 @@ def build_post_matrix(corpus, matrix_id, model_name='all-MiniLM-L6-v2', matrix_f
     #         matrix = pickle.load(file)
     #         file.close()
 
-    file_url = f"https://drive.google.com/uc?id={matrix_id}"
-    memory_file = BytesIO()
-    gdown.download(file_url, output=memory_file, quiet=True)
-    memory_file.seek(0)
+    file_url = f"https://drive.google.com/uc?id={embedder_id}"
+    embedder_memory_file = BytesIO()
+    gdown.download(file_url, output=embedder_memory_file, quiet=True)
+    embedder_memory_file.seek(0)
 
-    matrix = pickle.load(memory_file)
+    embedder = pickle.load(embedder_memory_file)
+
+    file_url = f"https://drive.google.com/uc?id={matrix_id}"
+    matrix_memory_file = BytesIO()
+    gdown.download(file_url, output=matrix_memory_file, quiet=True)
+    matrix_memory_file.seek(0)
+
+    matrix = pickle.load(matrix_memory_file)
 
     return embedder, matrix
 
@@ -180,4 +206,4 @@ data = load_dataset(CLEAN_DATA_JSON_ID)
 corpus, doc_ids, doc_id_comments_mapper = prepare_corpus(data)
 # # Build retrieval system
 generator = load_generative_model(SUMMERIZER_ID)
-vector_embedder, matrices = build_post_matrix(corpus, MATRIX_ID)
+vector_embedder, matrices = build_post_matrix(corpus, MATRIX_ID, EMBEDDER_ID)

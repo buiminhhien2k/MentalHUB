@@ -9,6 +9,9 @@ from bot_responser import (
 from flask import Flask, render_template, request, jsonify
 from config import CLASSIFIER_ID
 
+import tracemalloc
+
+
 def get_classifier_model(classifier_id, cls_model_pickle_file="model/svc_1vR_classifier.pickle"):
     # with open(cls_model_pickle_file, 'rb') as file:
     #     # Deserialize and retrieve the variable from the file
@@ -80,12 +83,23 @@ def greeting():
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.json.get('message')
+
+    tracemalloc.start()
+    start_snapshot = tracemalloc.take_snapshot()
+
     response_comments = find_response_message(user_message, matrices, doc_id_comments_mapper, vector_embedder)
     response = paraphrase_message(response_comments, generator)
 
     class_proba = classifier(user_message, vector_embedder, classifier_model)
     classifier_text = prepare_classifier_message(class_proba, classifier_model.classes_)
 
+    end_snapshot = tracemalloc.take_snapshot()
+    stats = end_snapshot.compare_to(start_snapshot, 'lineno')
+    print("[ Top 5 memory-consuming lines ]")
+    for stat in stats[:5]:
+        print(stat)
+
+    tracemalloc.stop()
     response = f"{classifier_text}\n\n{response}"
     return jsonify({'reply': response})
 
