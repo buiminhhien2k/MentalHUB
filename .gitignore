@@ -1,6 +1,7 @@
 .idea/
 *.iml
 __pycache__/
-config.py
-data/raw
-data/skeleton
+#config.py
+data/
+model/
+.env
