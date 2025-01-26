@@ -2,4 +2,5 @@
 *.iml
 __pycache__/
 config.py
-data/
+data/raw
+data/skeleton
