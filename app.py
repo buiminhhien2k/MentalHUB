@@ -6,15 +6,41 @@ import random as rd
 #     find_response_message, paraphrase_message
 # )
 
-from bot_responser import build_post_matrix, load_generative_model
+from bot_responser import build_post_matrix
 
 from io import BytesIO
-import gdown
+import gdown, lzma
 
 from flask import Flask, render_template, request, jsonify
 # from config import CLASSIFIER_ID, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
 
 from config import PORT, CLASSIFIER_ID, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
+
+
+def load_generative_model(paraphaser_id, model_name='google-t5/t5-small', file_path='model/summarizer_pipeline.pickle'):
+
+    # # below is the old version, I modfify to load it from google drive so the app is lighter
+    # if not os.path.isfile(file_path):
+    #     generator = pipeline("summarization", model=model_name)
+    #     with open(file_path, 'wb') as file:
+    #         # Serialize and write the variable to the file
+    #         pickle.dump(generator, file)
+    #
+    # else:
+    #     with open(file_path, 'rb') as file:
+    #         # Deserialize and retrieve the variable from the file
+    #         generator = pickle.load(file)
+    # return generator
+
+    file_url = f"https://drive.google.com/uc?id={paraphaser_id}"
+    memory_file = BytesIO()
+    gdown.download(file_url, output=memory_file, quiet=True)
+    memory_file.seek(0)
+
+    with lzma.open(memory_file, "rb") as decompressed_file:
+        generator = pickle.load(decompressed_file)
+    # pickle.load( lzma.open('model/summerizer_pipeline.xz'))
+    return generator
 
 
 def get_classifier_model(classifier_id, cls_model_pickle_file="model/svc_1vR_classifier.pickle"):
@@ -63,7 +89,7 @@ def prepare_classifier_message(predicted_result, classes):
 
 # vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
 
-# generator = load_generative_model(SUMMERIZER_ID)
+generator = load_generative_model(SUMMERIZER_ID)
 classifier_model = get_classifier_model(CLASSIFIER_ID)
 
 app = Flask(__name__)
