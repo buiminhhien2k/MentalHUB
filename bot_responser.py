@@ -17,7 +17,7 @@ from config import CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
 def load_dataset(clean_data_json_id):
     file_url = f"https://drive.google.com/uc?id={clean_data_json_id}"
     memory_file = BytesIO()
-    gdown.download(file_url, output=memory_file, quiet=True)
+    gdown.download(file_url, output=memory_file, quiet=False)
     memory_file.seek(0)
     return json.load(memory_file)
 
@@ -47,7 +47,7 @@ def prepare_corpus(data):
 
 # Step 2: Create and store embeddings
 def build_post_matrix(
-        corpus,
+        # corpus,
         matrix_id,
         embedder_id,
         model_name='all-MiniLM-L6-v2',
@@ -84,14 +84,14 @@ def build_post_matrix(
 
     file_url = f"https://drive.google.com/uc?id={embedder_id}"
     embedder_memory_file = BytesIO()
-    gdown.download(file_url, output=embedder_memory_file, quiet=True)
+    gdown.download(file_url, output=embedder_memory_file, quiet=False)
     embedder_memory_file.seek(0)
 
     embedder = pickle.load(embedder_memory_file)
 
     file_url = f"https://drive.google.com/uc?id={matrix_id}"
     matrix_memory_file = BytesIO()
-    gdown.download(file_url, output=matrix_memory_file, quiet=True)
+    gdown.download(file_url, output=matrix_memory_file, quiet=False)
     matrix_memory_file.seek(0)
 
     matrix = pickle.load(matrix_memory_file)
@@ -116,7 +116,7 @@ def load_generative_model(paraphaser_id, model_name='google-t5/t5-small', file_p
 
     file_url = f"https://drive.google.com/uc?id={paraphaser_id}"
     memory_file = BytesIO()
-    gdown.download(file_url, output=memory_file, quiet=True)
+    gdown.download(file_url, output=memory_file, quiet=False)
     memory_file.seek(0)
 
     generator = pickle.load(memory_file)
@@ -201,9 +201,16 @@ def paraphrase_message(message, generator):
         returned_message += refined_paragraph + "\n\n"
     return returned_message[:-2] if returned_message[-2:] == '\n\n' else returned_message
 
-    # Load and preprocess data
-data = load_dataset(CLEAN_DATA_JSON_ID)
-corpus, doc_ids, doc_id_comments_mapper = prepare_corpus(data)
-# # Build retrieval system
+# data = load_dataset(CLEAN_DATA_JSON_ID)
+# corpus, doc_ids, doc_id_comments_mapper = prepare_corpus(data)
+
 generator = load_generative_model(SUMMERIZER_ID)
-vector_embedder, matrices = build_post_matrix(corpus, MATRIX_ID, EMBEDDER_ID)
+# vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
+
+if __name__ == "__main__":
+    # Load and preprocess data
+    data = load_dataset(CLEAN_DATA_JSON_ID)
+    corpus, doc_ids, doc_id_comments_mapper = prepare_corpus(data)
+    # # Build retrieval system
+    generator = load_generative_model(SUMMERIZER_ID)
+    vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
