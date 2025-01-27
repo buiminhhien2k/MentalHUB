@@ -6,15 +6,22 @@ import random as rd
 #     find_response_message, paraphrase_message
 # )
 
-from bot_responser import build_post_matrix
+# from bot_responser import build_post_matrix
 
 from io import BytesIO
-import gdown, lzma
+import gdown, lzma, json
 
 from flask import Flask, render_template, request, jsonify
 # from config import CLASSIFIER_ID, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
 
 from config import PORT, CLASSIFIER_ID, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
+
+def load_dataset(clean_data_json_id):
+    file_url = f"https://drive.google.com/uc?id={clean_data_json_id}"
+    memory_file = BytesIO()
+    gdown.download(file_url, output=memory_file, quiet=False)
+    memory_file.seek(0)
+    return json.load(memory_file)
 
 
 def load_generative_model(paraphaser_id, model_name='google-t5/t5-small', file_path='model/summarizer_pipeline.pickle'):
@@ -37,9 +44,7 @@ def load_generative_model(paraphaser_id, model_name='google-t5/t5-small', file_p
     gdown.download(file_url, output=memory_file, quiet=True)
     memory_file.seek(0)
 
-    with lzma.open(memory_file, "rb") as decompressed_file:
-        generator = pickle.load(decompressed_file)
-    # pickle.load( lzma.open('model/summerizer_pipeline.xz'))
+    generator = pickle.load(lzma.open(memory_file, "rb"))
     return generator
 
 
@@ -87,10 +92,11 @@ def prepare_classifier_message(predicted_result, classes):
         message_format += f" {cls}: {class_acc_mapper[cls]}"
     return message_format
 
+# data = load_dataset(CLEAN_DATA_JSON_ID)
 # vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
 
 generator = load_generative_model(SUMMERIZER_ID)
-classifier_model = get_classifier_model(CLASSIFIER_ID)
+# classifier_model = get_classifier_model(CLASSIFIER_ID)
 
 app = Flask(__name__)
 
