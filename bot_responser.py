@@ -206,10 +206,10 @@ def paraphrase_message(message, generator):
 
 # generator = load_generative_model(SUMMERIZER_ID)
 
-if __name__ == "__main__":
-    # Load and preprocess data
-    data = load_dataset(CLEAN_DATA_JSON_ID)
-    corpus, doc_ids, doc_id_comments_mapper = prepare_corpus(data)
-    # # Build retrieval system
-    generator = load_generative_model(SUMMERIZER_ID)
-    vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
+# if __name__ == "__main__":
+#     # Load and preprocess data
+#     data = load_dataset(CLEAN_DATA_JSON_ID)
+#     corpus, doc_ids, doc_id_comments_mapper = prepare_corpus(data)
+#     # # Build retrieval system
+#     generator = load_generative_model(SUMMERIZER_ID)
+#     vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
