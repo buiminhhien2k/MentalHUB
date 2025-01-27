@@ -14,7 +14,7 @@ import gdown
 from flask import Flask, render_template, request, jsonify
 # from config import CLASSIFIER_ID, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
 
-from config import PORT, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
+from config import PORT, CLASSIFIER_ID, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
 
 
 def get_classifier_model(classifier_id, cls_model_pickle_file="model/svc_1vR_classifier.pickle"):
@@ -63,8 +63,8 @@ def prepare_classifier_message(predicted_result, classes):
 
 # vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
 
-generator = load_generative_model(SUMMERIZER_ID)
-# classifier_model = get_classifier_model(CLASSIFIER_ID)
+# generator = load_generative_model(SUMMERIZER_ID)
+classifier_model = get_classifier_model(CLASSIFIER_ID)
 
 app = Flask(__name__)
 
