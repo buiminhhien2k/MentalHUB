@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mental HUB</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="icon" href="/static/logo.png" type="image/icon type">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/icon type">
 
 </head>
 <body>
 <div id="main-area">
     <div id="logo-container">
-        <img src="/static/logo.png" alt="Chatbot Logo" id="logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Chatbot Logo" id="logo">
     </div>
     <div id="chat-container">
         <div id="chat-box">
