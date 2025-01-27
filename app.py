@@ -87,20 +87,19 @@ def build_post_matrix(
     #         matrix = pickle.load(file)
     #         file.close()
 
-    # file_url = f"https://drive.google.com/uc?id={embedder_id}"
-    # embedder_memory_file = BytesIO()
-    # gdown.download(file_url, output=embedder_memory_file, quiet=True)
-    # embedder_memory_file.seek(0)
-    #
-    # embedder = pickle.load(embedder_memory_file)
-    embedder = None
+    file_url = f"https://drive.google.com/uc?id={embedder_id}"
+    embedder_memory_file = BytesIO()
+    gdown.download(file_url, output=embedder_memory_file, quiet=True)
+    embedder_memory_file.seek(0)
+
+    embedder = pickle.load(lzma.open(embedder_memory_file, 'rb'))
 
     file_url = f"https://drive.google.com/uc?id={matrix_id}"
     matrix_memory_file = BytesIO()
     gdown.download(file_url, output=matrix_memory_file, quiet=True)
     matrix_memory_file.seek(0)
 
-    matrix = pickle.load(matrix_memory_file)
+    matrix = pickle.load(lzma.open(matrix_memory_file, 'rb'))
 
     return embedder, matrix
 
