@@ -3,8 +3,11 @@ import random as rd
 
 from bot_responser import (
     vector_embedder, matrices, generator, doc_id_comments_mapper,
-    find_response_message, paraphrase_message, BytesIO, gdown
+    find_response_message, paraphrase_message
 )
+
+from io import BytesIO
+import gdown
 
 from flask import Flask, render_template, request, jsonify
 from config import CLASSIFIER_ID
@@ -84,16 +87,16 @@ def greeting():
 def chat():
     user_message = request.json.get('message')
 
-    # response_comments = find_response_message(user_message, matrices, doc_id_comments_mapper, vector_embedder)
-    # response = paraphrase_message(response_comments, generator)
-    #
-    # class_proba = classifier(user_message, vector_embedder, classifier_model)
-    # classifier_text = prepare_classifier_message(class_proba, classifier_model.classes_)
-    # response = f"{classifier_text}\n\n{response}"
+    response_comments = find_response_message(user_message, matrices, doc_id_comments_mapper, vector_embedder)
+    response = paraphrase_message(response_comments, generator)
 
-    # return jsonify({'reply': response})
-    return jsonify({'reply': user_message})
+    class_proba = classifier(user_message, vector_embedder, classifier_model)
+    classifier_text = prepare_classifier_message(class_proba, classifier_model.classes_)
+    response = f"{classifier_text}\n\n{response}"
+
+    return jsonify({'reply': response})
+    # return jsonify({'reply': user_message})
 
 
 if __name__ == '__main__':
-    app.run(port=PORT, host='0.0.0.0')
+    app.run()
