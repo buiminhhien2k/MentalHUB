@@ -61,7 +61,7 @@ def prepare_classifier_message(predicted_result, classes):
         message_format += f" {cls}: {class_acc_mapper[cls]}"
     return message_format
 
-vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
+# vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
 
 
 # classifier_model = get_classifier_model(CLASSIFIER_ID)
