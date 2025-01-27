@@ -6,7 +6,7 @@ import random as rd
 #     find_response_message, paraphrase_message
 # )
 
-# from bot_responser import build_post_matrix
+from sentence_transformers import SentenceTransformer
 
 from io import BytesIO
 import gdown, lzma, json
@@ -93,7 +93,7 @@ def build_post_matrix(
     embedder_memory_file.seek(0)
 
     # embedder = pickle.load(lzma.open(embedder_memory_file, 'rb'))
-    embedder = None
+    embedder = embedder = SentenceTransformer(model_name)
 
     file_url = f"https://drive.google.com/uc?id={matrix_id}"
     matrix_memory_file = BytesIO()
@@ -255,7 +255,7 @@ doc_id_comments_mapper = prepare_corpus(DOC_ID_COMMENTS_MAPPER_ID)
 vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
 
 # generator = load_generative_model(SUMMERIZER_ID)
-# classifier_model = get_classifier_model(CLASSIFIER_ID)
+classifier_model = get_classifier_model(CLASSIFIER_ID)
 
 app = Flask(__name__)
 
