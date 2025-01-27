@@ -61,7 +61,7 @@ def prepare_classifier_message(predicted_result, classes):
     return message_format
 
 
-classifier_model = get_classifier_model(CLASSIFIER_ID)
+# classifier_model = get_classifier_model(CLASSIFIER_ID)
 
 app = Flask(__name__)
 
