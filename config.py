@@ -122,6 +122,8 @@ headers = [
     {}
 ]
 
+PORT = int(os.getenv("PORT"))
+
 CLEAN_DATA_JSON_ID = os.getenv("CLEAN_DATA_JSON_ID")
 SUMMERIZER_ID = os.getenv("SUMMERIZER_ID")
 MATRIX_ID = os.getenv("MATRIX_ID")
