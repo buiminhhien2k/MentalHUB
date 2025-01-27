@@ -120,7 +120,7 @@ def load_generative_model(paraphaser_id, model_name='google-t5/t5-small', file_p
     memory_file.seek(0)
 
     generator = pickle.load(memory_file)
-
+    # pickle.load( lzma.open('model/summerizer_pipeline.xz'))
     return generator
 
 
@@ -204,8 +204,8 @@ def paraphrase_message(message, generator):
 # data = load_dataset(CLEAN_DATA_JSON_ID)
 # corpus, doc_ids, doc_id_comments_mapper = prepare_corpus(data)
 
-generator = load_generative_model(SUMMERIZER_ID)
-# vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
+# generator = load_generative_model(SUMMERIZER_ID)
+vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
 
 if __name__ == "__main__":
     # Load and preprocess data

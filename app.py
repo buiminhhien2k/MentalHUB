@@ -6,7 +6,7 @@ import random as rd
 #     find_response_message, paraphrase_message
 # )
 
-from bot_responser import generator
+from bot_responser import vector_embedder, matrices
 
 from io import BytesIO
 import gdown
