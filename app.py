@@ -92,10 +92,10 @@ def prepare_classifier_message(predicted_result, classes):
         message_format += f" {cls}: {class_acc_mapper[cls]}"
     return message_format
 
-# data = load_dataset(CLEAN_DATA_JSON_ID)
+data = load_dataset(CLEAN_DATA_JSON_ID)
 # vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
 
-generator = load_generative_model(SUMMERIZER_ID)
+# generator = load_generative_model(SUMMERIZER_ID)
 # classifier_model = get_classifier_model(CLASSIFIER_ID)
 
 app = Flask(__name__)
@@ -135,4 +135,4 @@ def chat():
 
 
 if __name__ == '__main__':
-    app.run(port = PORT, host = '0.0.0.0')
+    app.run()
