@@ -6,13 +6,13 @@ import random as rd
 #     find_response_message, paraphrase_message
 # )
 
-from bot_responser import vector_embedder, matrices
+from bot_responser import build_post_matrix
 
 from io import BytesIO
 import gdown
 
 from flask import Flask, render_template, request, jsonify
-from config import CLASSIFIER_ID
+from config import CLASSIFIER_ID, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
 
 from config import PORT
 
@@ -60,6 +60,8 @@ def prepare_classifier_message(predicted_result, classes):
             message_format += ", "
         message_format += f" {cls}: {class_acc_mapper[cls]}"
     return message_format
+
+vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
 
 
 # classifier_model = get_classifier_model(CLASSIFIER_ID)

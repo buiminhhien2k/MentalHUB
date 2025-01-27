@@ -205,7 +205,6 @@ def paraphrase_message(message, generator):
 # corpus, doc_ids, doc_id_comments_mapper = prepare_corpus(data)
 
 # generator = load_generative_model(SUMMERIZER_ID)
-vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
 
 if __name__ == "__main__":
     # Load and preprocess data
