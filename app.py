@@ -84,14 +84,15 @@ def greeting():
 def chat():
     user_message = request.json.get('message')
 
-    response_comments = find_response_message(user_message, matrices, doc_id_comments_mapper, vector_embedder)
-    response = paraphrase_message(response_comments, generator)
+    # response_comments = find_response_message(user_message, matrices, doc_id_comments_mapper, vector_embedder)
+    # response = paraphrase_message(response_comments, generator)
+    #
+    # class_proba = classifier(user_message, vector_embedder, classifier_model)
+    # classifier_text = prepare_classifier_message(class_proba, classifier_model.classes_)
+    # response = f"{classifier_text}\n\n{response}"
 
-    class_proba = classifier(user_message, vector_embedder, classifier_model)
-    classifier_text = prepare_classifier_message(class_proba, classifier_model.classes_)
-    response = f"{classifier_text}\n\n{response}"
-
-    return jsonify({'reply': response})
+    # return jsonify({'reply': response})
+    return jsonify({'reply': user_message})
 
 
 if __name__ == '__main__':
