@@ -89,14 +89,15 @@ def build_post_matrix(
 
     file_url = f"https://drive.google.com/uc?id={embedder_id}"
     embedder_memory_file = BytesIO()
-    gdown.download(file_url, output=embedder_memory_file, quiet=True)
+    gdown.download(file_url, output=embedder_memory_file, quiet=False)
     embedder_memory_file.seek(0)
 
-    embedder = pickle.load(lzma.open(embedder_memory_file, 'rb'))
+    # embedder = pickle.load(lzma.open(embedder_memory_file, 'rb'))
+    embedder = None
 
     file_url = f"https://drive.google.com/uc?id={matrix_id}"
     matrix_memory_file = BytesIO()
-    gdown.download(file_url, output=matrix_memory_file, quiet=True)
+    gdown.download(file_url, output=matrix_memory_file, quiet=False)
     matrix_memory_file.seek(0)
 
     matrix = pickle.load(lzma.open(matrix_memory_file, 'rb'))
@@ -142,6 +143,8 @@ def get_classifier_model(classifier_id, cls_model_pickle_file="model/svc_1vR_cla
     return cls_1vR_model
 
 def find_response_message(query, corpus_matrix, comment_indexer, embedder):
+    print(corpus_matrix.shape)
+    print(comment_indexer.keys())
     embedded_vector = embedder.encode(query, convert_to_tensor=False).reshape(1,-1)
 
     similarity_score = ((corpus_matrix - embedded_vector) ** 2).sum(axis = 1)
@@ -152,7 +155,7 @@ def find_response_message(query, corpus_matrix, comment_indexer, embedder):
     comments = []
 
     for doc_id in doc_ids_list:
-        comments += comment_indexer[doc_id]
+        comments += comment_indexer[str(doc_id)]
 
     if len(comments) == 0:
         order_similarity_score = sorted(list(similarity_score))
@@ -161,7 +164,7 @@ def find_response_message(query, corpus_matrix, comment_indexer, embedder):
         while (len(comments) == 0) and k < 10:
             doc_ids_list = [i for i, score in enumerate(similarity_score) if score == min_score]
             for doc_id in doc_ids_list:
-                comments += comment_indexer[doc_id]
+                comments += comment_indexer[str(doc_id)]
             k += len(doc_ids_list)
             min_score = order_similarity_score[k]
 
@@ -284,7 +287,7 @@ def chat():
     #
     # class_proba = classifier(user_message, vector_embedder, classifier_model)
     # classifier_text = prepare_classifier_message(class_proba, classifier_model.classes_)
-    # response = f"{classifier_text}\n\n{response}"
+    # response = f"{classifier_text}\n\n{response_comments}"
 
     # return jsonify({'reply': response})
     return jsonify({'reply': user_message})
