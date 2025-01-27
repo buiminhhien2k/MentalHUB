@@ -6,15 +6,15 @@ import random as rd
 #     find_response_message, paraphrase_message
 # )
 
-from bot_responser import build_post_matrix
+from bot_responser import build_post_matrix, load_generative_model
 
 from io import BytesIO
 import gdown
 
 from flask import Flask, render_template, request, jsonify
-from config import CLASSIFIER_ID, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
+# from config import CLASSIFIER_ID, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
 
-from config import PORT
+from config import PORT, CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
 
 
 def get_classifier_model(classifier_id, cls_model_pickle_file="model/svc_1vR_classifier.pickle"):
@@ -63,7 +63,7 @@ def prepare_classifier_message(predicted_result, classes):
 
 # vector_embedder, matrices = build_post_matrix(MATRIX_ID, EMBEDDER_ID)
 
-
+generator = load_generative_model(SUMMERIZER_ID)
 # classifier_model = get_classifier_model(CLASSIFIER_ID)
 
 app = Flask(__name__)
@@ -103,4 +103,4 @@ def chat():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port = PORT, host = '0.0.0.0')

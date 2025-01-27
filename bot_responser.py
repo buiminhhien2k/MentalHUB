@@ -7,11 +7,8 @@ import pickle
 # import os.path
 # from tqdm import tqdm
 import random as rd
-import gdown
+import gdown, lzma
 from io import BytesIO
-
-from config import CLEAN_DATA_JSON_ID, SUMMERIZER_ID, MATRIX_ID, EMBEDDER_ID
-
 
 # Load your Reddit dataset
 def load_dataset(clean_data_json_id):
@@ -119,7 +116,8 @@ def load_generative_model(paraphaser_id, model_name='google-t5/t5-small', file_p
     gdown.download(file_url, output=memory_file, quiet=False)
     memory_file.seek(0)
 
-    generator = pickle.load(memory_file)
+    with lzma.open(memory_file, "rb") as decompressed_file:
+        generator = pickle.load(decompressed_file)
     # pickle.load( lzma.open('model/summerizer_pipeline.xz'))
     return generator
 
